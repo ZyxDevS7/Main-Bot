@@ -11,17 +11,15 @@ module.exports = {
                 .addChoices(
                     { name: 'Server Restarted', value: 'restarted' },
                     { name: 'Server Under Maintenance', value: 'maintenance' }
-                )),
+                ))
+        .setDefaultPermission(false), // Make sure this is false to control permissions explicitly
+    permissions: [
+        process.env.ADMIN_ROLE,
+        process.env.MODERATOR_ROLE
+    ],  // Admin and Moderator roles from .env
     async execute(interaction) {
         // Defer the reply to acknowledge the interaction within 3 seconds
         await interaction.deferReply();
-
-        permissions: [
-        process.env.ADMIN_ROLE,
-        process.env.MODERATOR_ROLE
-    ],
-
-        const status = interaction.options.getString('status');
 
         // Embed details
         const serverName = 'Your Server Name'; // Replace with your server's name
@@ -29,6 +27,8 @@ module.exports = {
         const footerName = 'Server Status'; // Replace with your footer name
         const restartedGif = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your "restarted" image/GIF URL
         const maintenanceGif = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your "maintenance" image/GIF URL
+
+        const status = interaction.options.getString('status');
 
         let embed;
 
