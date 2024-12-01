@@ -13,10 +13,13 @@ module.exports = {
                     { name: 'Server Under Maintenance', value: 'maintenance' }
                 )),
     async execute(interaction) {
+        // Defer the reply to acknowledge the interaction within 3 seconds
+        await interaction.deferReply();
+
         // Check if the user has Admin role
         const adminRoleId = process.env.ADMIN_ROLE; // Admin role ID from .env file
         if (!interaction.member.roles.cache.has(adminRoleId)) {
-            return interaction.reply({
+            return interaction.followUp({
                 content: 'You do not have the required permissions to use this command.',
                 ephemeral: true
             });
@@ -52,7 +55,7 @@ module.exports = {
         // Send the embed message to the same channel without replying to the command
         await interaction.channel.send({ embeds: [embed] });
 
-        // Optionally, you can acknowledge the command without replying
-        await interaction.deferReply();
+        // Optionally, you can send a follow-up message after deferring the reply
+        await interaction.followUp({ content: 'Status update sent!', ephemeral: true });
     },
 };
