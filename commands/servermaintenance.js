@@ -55,7 +55,10 @@ module.exports = {
         // Send the embed message to the same channel without replying to the command
         await interaction.channel.send({ embeds: [embed] });
 
-        // Optionally, you can send a follow-up message after deferring the reply
-        await interaction.followUp({ content: 'Status update sent!', ephemeral: true });
+        // Send an ephemeral follow-up message
+        await interaction.followUp({
+            content: 'Status update sent!',
+            ephemeral: true
+        });
     },
 };
