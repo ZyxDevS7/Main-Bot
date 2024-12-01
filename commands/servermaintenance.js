@@ -16,14 +16,10 @@ module.exports = {
         // Defer the reply to acknowledge the interaction within 3 seconds
         await interaction.deferReply();
 
-        // Check if the user has Admin role
-        const adminRoleId = process.env.ADMIN_ROLE; // Admin role ID from .env file
-        if (!interaction.member.roles.cache.has(adminRoleId)) {
-            return interaction.followUp({
-                content: 'You do not have the required permissions to use this command.',
-                ephemeral: true
-            });
-        }
+        permissions: [
+        process.env.ADMIN_ROLE,
+        process.env.MODERATOR_ROLE
+    ],
 
         const status = interaction.options.getString('status');
 
