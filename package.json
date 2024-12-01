@@ -1,0 +1,17 @@
+{
+  "name": "ZyX Development",
+  "version": "1.0.0",
+  "description": "Multipurpose Bot Made By ZyroniX.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["discord", "bot", "slash-commands", "role-based"],
+  "author": "ZyroniX ,AKA SreeOp",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "fs": "^0.0.1-security"
+  }
+}
