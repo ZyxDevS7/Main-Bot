@@ -13,14 +13,23 @@ module.exports = {
                     { name: 'Server Under Maintenance', value: 'maintenance' }
                 )),
     async execute(interaction) {
+        // Check if the user has Admin role
+        const adminRoleId = process.env.ADMIN_ROLE; // Admin role ID from .env file
+        if (!interaction.member.roles.cache.has(adminRoleId)) {
+            return interaction.reply({
+                content: 'You do not have the required permissions to use this command.',
+                ephemeral: true
+            });
+        }
+
         const status = interaction.options.getString('status');
 
         // Embed details
-        const serverName = 'ZyX'; // Replace with your server's name
+        const serverName = 'Your Server Name'; // Replace with your server's name
         const footerIcon = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your footer icon URL
         const footerName = 'Server Status'; // Replace with your footer name
-        const restartedGif = 'https://tenor.com/fhL2VJlFhTN.gif'; // Replace with your "restarted" image/GIF URL
-        const maintenanceGif = 'https://tenor.com/fhL2VJlFhTN.gif'; // Replace with your "maintenance" image/GIF URL
+        const restartedGif = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your "restarted" image/GIF URL
+        const maintenanceGif = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your "maintenance" image/GIF URL
 
         let embed;
 
@@ -40,6 +49,10 @@ module.exports = {
                 .setColor('Red');
         }
 
-        await interaction.reply({ embeds: [embed] });
+        // Send the embed message to the same channel without replying to the command
+        await interaction.channel.send({ embeds: [embed] });
+
+        // Optionally, you can acknowledge the command without replying
+        await interaction.deferReply();
     },
 };
