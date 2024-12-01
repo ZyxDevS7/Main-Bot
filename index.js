@@ -2,7 +2,7 @@ const fs = require('fs');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const deployCommands = require('./functions/deployCommands');
 const handleCommand = require('./functions/handleCommand');
-const config = require('./config.json');
+require('dotenv').config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -29,4 +29,4 @@ client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
-client.login(config.token);
+client.login(process.env.TOKEN);
