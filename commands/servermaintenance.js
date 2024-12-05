@@ -10,10 +10,9 @@ module.exports = {
     ],
     async execute(interaction) {
         // Hardcoded role ID
-        const roleId = '1312735645260845066'; // Replace with the role ID to mention
-
-        // Fetch the role from the guild
+        const roleId = '1312735645260845066'; // Replace with the actual role ID
         const role = interaction.guild.roles.cache.get(roleId);
+
         if (!role) {
             return interaction.reply({
                 content: 'The specified role does not exist. Please check the role ID.',
@@ -32,10 +31,18 @@ module.exports = {
                 iconURL: interaction.client.user.displayAvatarURL()
             });
 
-        // Send the message with the embed and role mention
-        await interaction.reply({
-            content: `${role}`, // Mentions the role
-            embeds: [embed]
-        });
+        try {
+            // Send the message with the embed and role mention
+            await interaction.channel.send({
+                content: `${role}`, // Mentions the role
+                embeds: [embed]
+            });
+
+            // Defer the reply to prevent a visible bot response
+            await interaction.deferReply({ ephemeral: true });
+            await interaction.deleteReply(); // Deletes the ephemeral reply immediately
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
     },
 };
