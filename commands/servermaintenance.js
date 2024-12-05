@@ -2,63 +2,40 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('servermaintenance')
-        .setDescription('Send a server status message')
-        .addStringOption(option =>
-            option.setName('status')
-                .setDescription('Select server status')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Server Restarted', value: 'restarted' },
-                    { name: 'Server Under Maintenance', value: 'maintenance' }
-                )),
+        .setName('servermain')
+        .setDescription('Announces server maintenance.'),
+    permissions: [
+        process.env.ADMIN_ROLE,
+        process.env.MODERATOR_ROLE
+    ],
     async execute(interaction) {
-        // Defer the reply to acknowledge the interaction within 3 seconds
-        await interaction.deferReply();
+        // Hardcoded role ID
+        const roleId = '1312735645260845066'; // Replace with the role ID to mention
 
-        // Check if the user has Admin role
-        const adminRoleId = process.env.ADMIN_ROLE; // Admin role ID from .env file
-        if (!interaction.member.roles.cache.has(adminRoleId)) {
-            return interaction.followUp({
-                content: 'You do not have the required permissions to use this command.',
+        // Fetch the role from the guild
+        const role = interaction.guild.roles.cache.get(roleId);
+        if (!role) {
+            return interaction.reply({
+                content: 'The specified role does not exist. Please check the role ID.',
                 ephemeral: true
             });
         }
 
-        const status = interaction.options.getString('status');
+        // Create the embed
+        const embed = new EmbedBuilder()
+            .setTitle('Server Under Maintenance')
+            .setDescription('Server is Currently Down For Maintenance, Please Wait.')
+            .setThumbnail('https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=6752de4b&is=67518ccb&hm=340fa4551a9796e280ec5de98b1c446edaeee47fdfcd4148db2e91e5f877613f&') // Replace with the thumbnail URL
+            .setImage('https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=6752de4b&is=67518ccb&hm=340fa4551a9796e280ec5de98b1c446edaeee47fdfcd4148db2e91e5f877613f&') // Replace with the GIF URL
+            .setFooter({
+                text: 'Nrp Developer Team',
+                iconURL: interaction.client.user.displayAvatarURL()
+            });
 
-        // Embed details
-        const serverName = 'Your Server Name'; // Replace with your server's name
-        const footerIcon = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your footer icon URL
-        const footerName = 'Server Status'; // Replace with your footer name
-        const restartedGif = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your "restarted" image/GIF URL
-        const maintenanceGif = 'https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=674d984b&is=674c46cb&hm=fb543f2e8a63c666d46b371970f56fa27750bf1494fbfcbc9d00241f2d5ae2e6&'; // Replace with your "maintenance" image/GIF URL
-
-        let embed;
-
-        if (status === 'restarted') {
-            embed = new EmbedBuilder()
-                .setTitle(serverName)
-                .setDescription('The Server Has Been Successfully Restarted. Connect Through IP. Enjoy Roleplay!')
-                .setImage(restartedGif)
-                .setFooter({ text: footerName, iconURL: footerIcon })
-                .setColor('Green');
-        } else if (status === 'maintenance') {
-            embed = new EmbedBuilder()
-                .setTitle(serverName)
-                .setDescription("The Server Is Under Maintenance. Please wait until it's online. Don't try to connect.")
-                .setImage(maintenanceGif)
-                .setFooter({ text: footerName, iconURL: footerIcon })
-                .setColor('Red');
-        }
-
-        // Send the embed message to the same channel without replying to the command
-        await interaction.channel.send({ embeds: [embed] });
-
-        // Send an ephemeral follow-up message
-        await interaction.followUp({
-            content: 'Status update sent!',
-            ephemeral: true
+        // Send the message with the embed and role mention
+        await interaction.reply({
+            content: `${role}`, // Mentions the role
+            embeds: [embed]
         });
     },
 };
