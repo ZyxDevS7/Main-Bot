@@ -51,7 +51,7 @@ module.exports = {
         const ctx = canvas.getContext('2d');
 
         // Background
-        const background = await loadImage('https://ibb.co/bd6xWmh'); // Replace with your image URL
+        const background = await loadImage('https://www.imghippo.com/i/fXSJ4736zg.png'); // Replace with your image URL
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
         // Add text
