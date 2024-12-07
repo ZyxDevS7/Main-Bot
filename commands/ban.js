@@ -51,7 +51,7 @@ module.exports = {
         const ctx = canvas.getContext('2d');
 
         // Background
-        const background = await loadImage(path.join(__dirname, '../assets/ban_background.png')); // Replace with your image
+        const background = await loadImage('https://ibb.co/bd6xWmh'); // Replace with your image URL
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
         // Add text
@@ -72,13 +72,13 @@ module.exports = {
             .setColor('#ff0000')
             .setDescription(`User: ${user}\nReason: ${reason}\nBan Period: ${period}\nBan Ends: <t:${Math.floor(banEnd.unix())}:F>`)
             .setThumbnail(user.displayAvatarURL())
-            .setImage('https://ibb.co/bd6xWmh')
+            .setImage('attachment://ban.png') // The generated image will appear here
             .setFooter({
-                text: 'By NightCity Management',
+                text: 'By Nee Ko Njaa Cha Management',
                 iconURL: interaction.client.user.displayAvatarURL()
             });
 
-        // Send embed to the target channel
+        // Send embed with the image attachment
         const targetChannel = interaction.guild.channels.cache.get(targetChannelId);
         if (!targetChannel) {
             return interaction.reply({
