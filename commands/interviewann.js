@@ -18,7 +18,7 @@ module.exports = {
             .setDescription(
                 `\`\`\`\nJoin Waiting Vc for Interview\n\`\`\`\n[**Interview Enquiry Channel**](#)\nMake sure you read rules before joining VC.`
             )
-            .setImage('URL_TO_INTERVIEW_IMAGE') // Replace with the actual image URL
+            .setImage('https://cdn.discordapp.com/attachments/1312311823650918463/1312740429158158396/nodejs.png?ex=675ac74b&is=675975cb&hm=c1eb3ee774e97ed25c9e9cf40cef514d30252ea0fe14e2fb111333ee3d7181d7&') // Replace with the actual image URL
             .setFooter({ text: 'NightCity' });
 
         // Create the button
