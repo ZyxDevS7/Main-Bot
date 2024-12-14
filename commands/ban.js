@@ -28,6 +28,10 @@ module.exports = {
         const period = interaction.options.getString('period');
         const reason = interaction.options.getString('reason');
 
+        // Hardcoded channel ID and image URL
+        const channelId = '1314202624060297338'; // Replace with the channel ID
+        const imageUrl = 'https://r2.fivemanage.com/M8ZRs0ZKRHQNYpT5YIztc/SCTFORu.gif'; // Replace with the URL of your image
+
         // Validate period format (e.g., "2days")
         const periodRegex = /^(\d+)(days)$/i;
         const match = period.match(periodRegex);
@@ -42,9 +46,18 @@ module.exports = {
         const duration = parseInt(match[1]); // Number of days
         const endDate = moment().add(duration, 'days').format('MMMM Do YYYY, h:mm A');
 
+        // Fetch the target channel
+        const channel = interaction.guild.channels.cache.get(channelId);
+        if (!channel) {
+            return interaction.reply({
+                content: 'The specified channel does not exist. Please check the channel ID.',
+                ephemeral: true
+            });
+        }
+
         // Create the embed
         const embed = new EmbedBuilder()
-            .setTitle('Night City')
+            .setTitle('Swapnalokam Ban Report')
             .setDescription(`${user} has been banned from the server for ${duration} days.`)
             .addFields(
                 { name: 'Reason', value: `\`\`\`${reason}\`\`\``, inline: false },
@@ -53,12 +66,22 @@ module.exports = {
                 { name: 'Ban End Date', value: `${endDate}`, inline: true }
             )
             .setColor('#FF0000') // Red color for ban
-            .setFooter({ text: 'Night City Frp-Team', iconURL: interaction.client.user.displayAvatarURL() });
+            .setImage(imageUrl) // Adds the provided image
+            .setFooter({
+                text: 'Swapnalokam Ban Report',
+                iconURL: interaction.client.user.displayAvatarURL()
+            });
 
-        // Send the embed
-        await interaction.reply({
+        // Send the embed to the target channel
+        await channel.send({
             content: `${user} has been banned for ${duration} days.`,
             embeds: [embed]
+        });
+
+        // Acknowledge the command
+        await interaction.reply({
+            content: 'Ban announcement sent!',
+            ephemeral: true
         });
 
         // You can integrate actual ban logic here if needed (e.g., banning the user from the server).
