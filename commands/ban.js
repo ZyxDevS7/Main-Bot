@@ -74,7 +74,7 @@ module.exports = {
 
         // Send the embed to the target channel
         await channel.send({
-            content: `${user} has been banned for ${duration} days.`,
+            content: `Banned ${user}`,
             embeds: [embed]
         });
 
