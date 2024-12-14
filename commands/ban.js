@@ -58,7 +58,7 @@ module.exports = {
         // Create the embed
         const embed = new EmbedBuilder()
             .setTitle('Night City')
-            .setDescription(`Banned ${user}`)
+            .setDescription(`${user} has been banned from the server for ${duration} days.`)
             .addFields(
                 { name: 'Reason', value: `\`\`\`${reason}\`\`\``, inline: false },
                 { name: 'User', value: `${user}`, inline: true },
