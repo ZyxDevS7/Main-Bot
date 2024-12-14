@@ -57,7 +57,7 @@ module.exports = {
 
         // Create the embed
         const embed = new EmbedBuilder()
-            .setTitle('Swapnalokam Ban Report')
+            .setTitle('Night City')
             .setDescription(`${user} has been banned from the server for ${duration} days.`)
             .addFields(
                 { name: 'Reason', value: `\`\`\`${reason}\`\`\``, inline: false },
@@ -68,7 +68,7 @@ module.exports = {
             .setColor('#FF0000') // Red color for ban
             .setImage(imageUrl) // Adds the provided image
             .setFooter({
-                text: 'Swapnalokam Ban Report',
+                text: 'NightCity F-Team',
                 iconURL: interaction.client.user.displayAvatarURL()
             });
 
