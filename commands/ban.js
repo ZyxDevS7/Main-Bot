@@ -1,9 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment-timezone');
 
-// Cooldown tracking
-const cooldowns = new Map();
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ban')
@@ -30,29 +27,6 @@ module.exports = {
         const user = interaction.options.getUser('user');
         const period = interaction.options.getString('period');
         const reason = interaction.options.getString('reason');
-
-        // Cooldown logic
-        const cooldownTime = 10 * 1000; // 10 seconds in milliseconds
-        const userId = interaction.user.id;
-
-        if (cooldowns.has(userId)) {
-            const expirationTime = cooldowns.get(userId) + cooldownTime;
-            const now = Date.now();
-
-            if (now < expirationTime) {
-                const timeLeft = ((expirationTime - now) / 1000).toFixed(1);
-                return interaction.reply({
-                    content: `You are on cooldown! Please wait ${timeLeft} more seconds before using this command again.`,
-                    ephemeral: true,
-                });
-            }
-        }
-
-        // Set cooldown
-        cooldowns.set(userId, Date.now());
-
-        // Remove cooldown after 10 seconds
-        setTimeout(() => cooldowns.delete(userId), cooldownTime);
 
         // Hardcoded channel ID and image URL
         const channelId = '1314202624060297338'; // Replace with the channel ID
@@ -83,8 +57,8 @@ module.exports = {
 
         // Create the embed
         const embed = new EmbedBuilder()
-            .setTitle('Swapnalokam Ban Report')
-            .setDescription(`${user} has been banned from the server for ${duration} days.`)
+            .setTitle('Night City')
+            .setDescription(`Banned ${user}`)
             .addFields(
                 { name: 'Reason', value: `\`\`\`${reason}\`\`\``, inline: false },
                 { name: 'User', value: `${user}`, inline: true },
@@ -94,7 +68,7 @@ module.exports = {
             .setColor('#FF0000') // Red color for ban
             .setImage(imageUrl) // Adds the provided image
             .setFooter({
-                text: 'Swapnalokam Ban Report',
+                text: 'NightCity F-Team',
                 iconURL: interaction.client.user.displayAvatarURL()
             });
 
