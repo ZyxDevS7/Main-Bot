@@ -8,12 +8,15 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const express = require('express');
 const app = express();
 
+// Define a simple route for uptime monitoring
 app.get('/', (req, res) => {
-    res.send('Bot is running!');
+    res.send('Bot is online and running!');
 });
 
-app.listen(9028, () => {
-    console.log('Express server running on port 9028');
+// Start the Express server
+const PORT = 9028; // Port number
+app.listen(PORT, () => {
+    console.log(`Express server running on port ${PORT}`);
 });
 
 client.commands = new Collection();
