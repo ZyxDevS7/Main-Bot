@@ -4,14 +4,23 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('interviewannounce')
         .setDescription('Announces the start of the whitelist interview section.'),
-    permissions: [
-        process.env.ADMIN_ROLE,
-        process.env.MODERATOR_ROLE
-    ],
     async execute(interaction) {
+        // Define the role IDs allowed to use this command
+        const allowedRoles = ['1307225215255707719']; // Replace with your staff role ID(s)
+
+        // Check if the user has one of the allowed roles
+        const hasRole = interaction.member.roles.cache.some(role => allowedRoles.includes(role.id));
+
+        if (!hasRole) {
+            return interaction.reply({
+                content: 'You do not have permission to use this command.',
+                ephemeral: true // Only visible to the user
+            });
+        }
+
         // Hardcoded role and channel IDs
-        const roleId = '1317411421566406706'; // Replace with the role ID to mention
-        const channelId = '1317411331862691891'; // Replace with the channel ID where the message should be sent
+        const roleId = '1315752587559174234'; // Replace with the role ID to mention
+        const channelId = '1316366281389375508'; // Replace with the channel ID where the message should be sent
 
         // Fetch the target channel
         const channel = interaction.guild.channels.cache.get(channelId);
@@ -36,7 +45,7 @@ module.exports = {
             new ButtonBuilder()
                 .setLabel('Join VC')
                 .setStyle(ButtonStyle.Link)
-                .setURL('https://discord.com/channels/1312311823650918460/1312311823650918464') // Replace with the actual VC link
+                .setURL('https://discord.com/channels/1120436484806287493/1316318559852429333') // Replace with the actual VC link
         );
 
         // Send the message to the target channel
