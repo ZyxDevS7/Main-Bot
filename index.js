@@ -5,6 +5,16 @@ const handleCommand = require('./functions/handleCommand');
 require('dotenv').config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+    res.send('Bot is running!');
+});
+
+app.listen(9028, () => {
+    console.log('Express server running on port 9028');
+});
 
 client.commands = new Collection();
 
