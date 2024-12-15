@@ -74,7 +74,7 @@ module.exports = {
 
             // Create the embed
             const embed = new EmbedBuilder()
-                .setTitle('Swapnalokam Ban Report')
+                .setTitle('NightCity Roleplay')
                 .setDescription(`${user} has been banned from the server for ${duration} ${unit}.`)
                 .addFields(
                     { name: 'Reason', value: `\`\`\`${reason}\`\`\``, inline: false },
@@ -85,13 +85,13 @@ module.exports = {
                 .setColor('#FF0000') // Red color for ban
                 .setImage(imageUrl) // Adds the provided image
                 .setFooter({
-                    text: 'Swapnalokam Ban Report',
+                    text: 'NightCity F-Team',
                     iconURL: interaction.client.user.displayAvatarURL()
                 });
 
             // Send the embed to the target channel
             await channel.send({
-                content: `${user} has been banned for ${duration} ${unit}.`,
+                content: `Banned ${user}`,
                 embeds: [embed]
             });
 
