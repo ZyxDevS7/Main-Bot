@@ -1,6 +1,4 @@
 const {
-    Client,
-    GatewayIntentBits,
     SlashCommandBuilder,
     EmbedBuilder,
     ActionRowBuilder,
@@ -9,48 +7,21 @@ const {
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle,
-    Collection,
 } = require('discord.js');
-const fs = require('fs');
-require('dotenv').config();
 
-// Initialize the client
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-client.commands = new Collection();
-
-// Load commands
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.data.name, command);
-}
-
-// Deploy commands
-client.on('ready', async () => {
-    const commands = [
-        new SlashCommandBuilder()
-            .setName('apply')
-            .setDescription('Opens an application process for joining the server.')
-            .toJSON(),
-    ];
-
-    await client.application.commands.set(commands);
-    console.log(`Logged in as ${client.user.tag}`);
-});
-
-// Slash command handling
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-
-    if (interaction.commandName === 'apply') {
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('apply')
+        .setDescription('Opens an application process for joining the server.'),
+    async execute(interaction) {
+        // Announce the application process in a specific channel
         const announcementChannelId = '1312311823650918463'; // Replace with your announcement channel ID
         const announcementChannel = interaction.guild.channels.cache.get(announcementChannelId);
 
         if (announcementChannel) {
             const announcementEmbed = new EmbedBuilder()
-                .setTitle('Apply Now!')
+                .setTitle('Apply to Join!')
                 .setDescription('Click the button below to fill out the application form.')
-                .setImage('') // Replace with your image URL
                 .setFooter({ text: 'Night City' });
 
             const announcementButton = new ActionRowBuilder().addComponents(
@@ -64,13 +35,17 @@ client.on('interactionCreate', async interaction => {
         }
 
         await interaction.reply({ content: 'The application process has been announced.', ephemeral: true });
-    }
 
-    if (interaction.isButton() && interaction.customId === 'open_application') {
-        const modal = new ModalBuilder()
-            .setCustomId('application_form')
-            .setTitle('Application Form')
-            .addComponents(
+        // Handle the button interaction
+        interaction.client.on('interactionCreate', async (buttonInteraction) => {
+            if (!buttonInteraction.isButton() || buttonInteraction.customId !== 'open_application') return;
+
+            // Create and show the modal
+            const modal = new ModalBuilder()
+                .setCustomId('application_form')
+                .setTitle('Application Form');
+
+            modal.addComponents(
                 new ActionRowBuilder().addComponents(
                     new TextInputBuilder()
                         .setCustomId('real_name')
@@ -102,82 +77,104 @@ client.on('interactionCreate', async interaction => {
                 new ActionRowBuilder().addComponents(
                     new TextInputBuilder()
                         .setCustomId('why_join')
-                        .setLabel('Why do you like to join NRP?')
+                        .setLabel('Why do you want to join NRP?')
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
                 )
             );
 
-        await interaction.showModal(modal);
-    }
-
-    if (interaction.isModalSubmit() && interaction.customId === 'application_form') {
-        const realName = interaction.fields.getTextInputValue('real_name');
-        const realAge = interaction.fields.getTextInputValue('real_age');
-        const roleplayExperience = interaction.fields.getTextInputValue('roleplay_experience');
-        const skills = interaction.fields.getTextInputValue('skills');
-        const whyJoin = interaction.fields.getTextInputValue('why_join');
-
-        const applicationChannelId = '1320024539760955496'; // Replace with your application channel ID
-        const applicationChannel = interaction.guild.channels.cache.get(applicationChannelId);
-
-        const applicationEmbed = new EmbedBuilder()
-            .setTitle('New Application')
-            .addFields(
-                { name: 'Real Name', value: realName },
-                { name: 'Real Age', value: realAge },
-                { name: 'Roleplay Experience', value: roleplayExperience },
-                { name: 'Skills', value: skills },
-                { name: 'Reason for Joining NRP', value: whyJoin }
-            )
-            .setFooter({ text: `Submitted by ${interaction.user.tag}` });
-
-        const actionRow = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setCustomId('accept_application')
-                .setLabel('Accept')
-                .setStyle(ButtonStyle.Success),
-            new ButtonBuilder()
-                .setCustomId('reject_application')
-                .setLabel('Reject')
-                .setStyle(ButtonStyle.Danger)
-        );
-
-        await applicationChannel.send({
-            content: `New application received from <@${interaction.user.id}>.`,
-            embeds: [applicationEmbed],
-            components: [actionRow],
+            await buttonInteraction.showModal(modal);
         });
 
-        await interaction.reply({ content: 'Your application has been submitted.', ephemeral: true });
-    }
+        // Handle modal submission
+        interaction.client.on('interactionCreate', async (modalInteraction) => {
+            if (!modalInteraction.isModalSubmit() || modalInteraction.customId !== 'application_form') return;
 
-    if (interaction.isButton() && (interaction.customId === 'accept_application' || interaction.customId === 'reject_application')) {
-        const responseChannelId = '1320024686155006055'; // Replace with your response channel ID
-        const responseChannel = interaction.guild.channels.cache.get(responseChannelId);
+            // Fetch user responses
+            const realName = modalInteraction.fields.getTextInputValue('real_name');
+            const realAge = modalInteraction.fields.getTextInputValue('real_age');
+            const roleplayExperience = modalInteraction.fields.getTextInputValue('roleplay_experience');
+            const skills = modalInteraction.fields.getTextInputValue('skills');
+            const whyJoin = modalInteraction.fields.getTextInputValue('why_join');
 
-        const applicantId = interaction.message.content.match(/<@(\d+)>/)[1];
-        const applicant = await interaction.guild.members.fetch(applicantId);
-
-        if (interaction.customId === 'accept_application') {
-            await interaction.update({
-                content: `Application accepted for <@${applicantId}>!`,
-                components: [],
+            // Acknowledge the modal interaction
+            await modalInteraction.reply({
+                content: 'Your application has been submitted!',
+                ephemeral: true,
             });
 
-            await applicant.send(`Congratulations, <@${applicantId}>! Your application to NRP has been accepted.`);
-            await responseChannel.send(`Application for <@${applicantId}> has been accepted by ${interaction.user.tag}.`);
-        } else if (interaction.customId === 'reject_application') {
-            await interaction.update({
-                content: `Application rejected for <@${applicantId}>.`,
-                components: [],
+            // Send application to the application channel
+            const applicationChannelId = '1320024539760955496'; // Replace with your application channel ID
+            const applicationChannel = modalInteraction.guild.channels.cache.get(applicationChannelId);
+
+            const applicationEmbed = new EmbedBuilder()
+                .setTitle('New Application Received')
+                .addFields(
+                    { name: 'Real Name', value: realName },
+                    { name: 'Real Age', value: realAge },
+                    { name: 'Roleplay Experience', value: roleplayExperience },
+                    { name: 'Skills', value: skills },
+                    { name: 'Why Join NRP?', value: whyJoin }
+                )
+                .setFooter({ text: `Submitted by ${modalInteraction.user.tag}` });
+
+            const actionRow = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('accept_application')
+                    .setLabel('Accept')
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setCustomId('reject_application')
+                    .setLabel('Reject')
+                    .setStyle(ButtonStyle.Danger)
+            );
+
+            await applicationChannel.send({
+                content: `New application received from <@${modalInteraction.user.id}>.`,
+                embeds: [applicationEmbed],
+                components: [actionRow],
             });
 
-            await applicant.send(`We regret to inform you, <@${applicantId}>, that your application to NRP has been rejected.`);
-            await responseChannel.send(`Application for <@${applicantId}> has been rejected by ${interaction.user.tag}.`);
-        }
-    }
-});
+            // Handle accept/reject buttons
+            const appCollector = applicationChannel.createMessageComponentCollector({ time: 60000 });
 
-// Login
-client.login(process.env.TOKEN);
+            appCollector.on('collect', async (appInteraction) => {
+                if (appInteraction.customId === 'accept_application') {
+                    // Accept application
+                    await appInteraction.update({
+                        content: `Application accepted for <@${modalInteraction.user.id}>.`,
+                        components: [],
+                        embeds: [applicationEmbed.setColor('Green')],
+                    });
+
+                    await modalInteraction.user.send(
+                        `Congratulations, <@${modalInteraction.user.id}>! Your application to NRP has been accepted.`
+                    );
+
+                    const responseChannelId = '1320024686155006055'; // Replace with your response channel ID
+                    const responseChannel = appInteraction.guild.channels.cache.get(responseChannelId);
+                    await responseChannel.send(
+                        `Application for <@${modalInteraction.user.id}> has been accepted by ${appInteraction.user.tag}.`
+                    );
+                } else if (appInteraction.customId === 'reject_application') {
+                    // Reject application
+                    await appInteraction.update({
+                        content: `Application rejected for <@${modalInteraction.user.id}>.`,
+                        components: [],
+                        embeds: [applicationEmbed.setColor('Red')],
+                    });
+
+                    await modalInteraction.user.send(
+                        `We regret to inform you, <@${modalInteraction.user.id}>, that your application to NRP has been rejected.`
+                    );
+
+                    const responseChannelId = '1320024686155006055'; // Replace with your response channel ID
+                    const responseChannel = appInteraction.guild.channels.cache.get(responseChannelId);
+                    await responseChannel.send(
+                        `Application for <@${modalInteraction.user.id}> has been rejected by ${appInteraction.user.tag}.`
+                    );
+                }
+            });
+        });
+    },
+};
