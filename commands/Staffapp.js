@@ -9,7 +9,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('Apply to Join NRP')
             .setDescription('Click the button below to fill out the application form.')
-            .setImage('https://example.com/image.png') // Replace with your actual image URL
+            .setImage('https://r2.fivemanage.com/M8ZRs0ZKRHQNYpT5YIztc/SCTFORu.gif') // Replace with your actual image URL
             .setFooter({ text: 'Night City' });
 
         const button = new ActionRowBuilder().addComponents(
