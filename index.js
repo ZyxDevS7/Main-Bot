@@ -1,12 +1,16 @@
 const fs = require('fs');
+const express = require('express');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const deployCommands = require('./functions/deployCommands');
 const handleCommand = require('./functions/handleCommand');
 require('dotenv').config();
 
+// Create Discord client
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const express = require('express');
+
+// Create Express app
 const app = express();
+const PORT = process.env.PORT || 9028;
 
 // Define a simple route for uptime monitoring
 app.get('/', (req, res) => {
@@ -14,32 +18,54 @@ app.get('/', (req, res) => {
 });
 
 // Start the Express server
-const PORT = 9028; // Port number
 app.listen(PORT, () => {
     console.log(`Express server running on port ${PORT}`);
 });
 
+// Initialize command collection
 client.commands = new Collection();
 
-// Load commands
+// Load commands dynamically
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.data.name, command);
+    try {
+        const command = require(`./commands/${file}`);
+        client.commands.set(command.data.name, command);
+        console.log(`Loaded command: ${command.data.name}`);
+    } catch (error) {
+        console.error(`Error loading command ${file}:`, error);
+    }
 }
 
 // Deploy commands
-deployCommands(client);
+(async () => {
+    try {
+        await deployCommands(client);
+        console.log('Slash commands deployed successfully.');
+    } catch (error) {
+        console.error('Error deploying commands:', error);
+    }
+})();
 
 // Handle interactions
 client.on('interactionCreate', async interaction => {
-    await handleCommand(interaction);
+    try {
+        await handleCommand(interaction);
+    } catch (error) {
+        console.error('Error handling interaction:', error);
+        if (interaction.isRepliable()) {
+            await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
+        }
+    }
 });
 
-// Log in
+// Log bot ready status
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
-client.login(process.env.TOKEN);
+// Log in to Discord
+client.login(process.env.TOKEN).catch(error => {
+    console.error('Failed to log in to Discord:', error);
+});
