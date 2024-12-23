@@ -1,10 +1,4 @@
-const {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-} = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,20 +20,19 @@ module.exports = {
             option
                 .setName('updates')
                 .setDescription('The items updated in this patch (separate by line).')
-                .setRequired(true)
-        )
-        .addStringOption(option =>
-            option
-                .setName('image')
-                .setDescription('A URL to an image for the patch note (optional).')
                 .setRequired(false)
         ),
     async execute(interaction) {
+        // Hardcoded settings
+        const imageUrl = 'https://r2.fivemanage.com/M8ZRs0ZKRHQNYpT5YIztc/SCTFORu.gif'; // Replace with your image URL
+        const roleId = '1317411421566406706'; // Replace with your role ID
+
+        // Get user inputs
         const title = interaction.options.getString('title');
         const added = interaction.options.getString('added');
         const updates = interaction.options.getString('updates');
-        const imageUrl = interaction.options.getString('image');
 
+        // Create the embed
         const patchEmbed = new EmbedBuilder()
             .setColor(0x990099) // Red color
             .setAuthor({
@@ -60,28 +53,22 @@ module.exports = {
                     inline: false,
                 }
             )
+            .setImage(imageUrl)
             .setFooter({
                 text: `Nrp Dev Team • ${interaction.user.tag}`,
                 iconURL: interaction.user.displayAvatarURL(),
             })
             .setTimestamp();
 
-        if (imageUrl) {
-            patchEmbed.setImage(imageUrl);
-        }
+        // Send the message to the same channel where the command is used
+        const channel = interaction.channel;
 
-        const actionRow = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setLabel('Join Us')
-                .setStyle(ButtonStyle.Link)
-                .setURL('https://discord.gg/example') // Replace with your invite link
-        );
-
-        // Send the embed
-        await interaction.reply({
-            content: '@USER', // Mention the desired role
+        await channel.send({
+            content: `<@&${roleId}>`, // Mention the role
             embeds: [patchEmbed],
-            components: [actionRow],
         });
+
+        // Acknowledge the interaction (ephemeral reply to avoid errors)
+        await interaction.reply({ content: 'Patch note sent successfully!', ephemeral: true });
     },
 };
