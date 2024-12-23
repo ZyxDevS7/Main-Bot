@@ -41,16 +41,24 @@ module.exports = {
         const imageUrl = interaction.options.getString('image');
 
         const patchEmbed = new EmbedBuilder()
-            .setColor(0xff0000) // Red color
+            .setColor(0x990099) // Red color
             .setAuthor({
-                name: 'Adholokam',
+                name: 'NightCity',
                 iconURL: 'https://example.com/logo.png', // Replace with your logo URL
             })
             .setTitle(title)
             .setDescription('These updates are here to improve gameplay')
             .addFields(
-                { name: 'ADDED', value: added || 'No items added.', inline: false },
-                { name: 'UPDATES', value: updates || 'No updates.', inline: false }
+                {
+                    name: 'ADDED',
+                    value: `\`\`\`\n${added}\n\`\`\``,
+                    inline: false,
+                },
+                {
+                    name: 'UPDATES',
+                    value: `\`\`\`\n${updates}\n\`\`\``,
+                    inline: false,
+                }
             )
             .setFooter({
                 text: `Nrp Dev Team • ${interaction.user.tag}`,
@@ -71,7 +79,7 @@ module.exports = {
 
         // Send the embed
         await interaction.reply({
-            content: '@Players', // Mention the desired role
+            content: '@USER', // Mention the desired role
             embeds: [patchEmbed],
             components: [actionRow],
         });
