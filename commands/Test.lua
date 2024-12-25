@@ -1,53 +1,5 @@
--- fxmanifest.lua
-fx_version 'cerulean'
-game 'gta5'
-
-author 'YourName'
-description 'Admin /nduty command with ox_lib menu integration'
-version '1.0.0'
-
-shared_script '@ox_lib/init.lua'
-client_script 'client.lua'
-server_script 'server.lua'
-
-lua54 'yes'
-
--- server.lua
-ESX = nil
-
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-
--- Check if a player is admin
-ESX.RegisterServerCallback('nduty:isAdmin', function(source, cb)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if xPlayer.getGroup() == 'admin' or xPlayer.getGroup() == 'superadmin' then
-        cb(true)
-    else
-        cb(false)
-    end
-end)
-
-RegisterServerEvent('nduty:setPed')
-AddEventHandler('nduty:setPed', function(targetId, pedName)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if xPlayer.getGroup() == 'admin' or xPlayer.getGroup() == 'superadmin' then
-        TriggerClientEvent('nduty:changePed', targetId, pedName)
-    else
-        TriggerClientEvent('ox_lib:notify', source, {type = 'error', description = 'You are not authorized to use this command.'})
-    end
-end)
-
-RegisterServerEvent('nduty:teleportToVehicle')
-AddEventHandler('nduty:teleportToVehicle', function(targetId)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if xPlayer.getGroup() == 'admin' or xPlayer.getGroup() == 'superadmin' then
-        TriggerClientEvent('nduty:teleportToPlayerVehicle', source, targetId)
-    else
-        TriggerClientEvent('ox_lib:notify', source, {type = 'error', description = 'You are not authorized to use this command.'})
-    end
-end)
-
--- client.lua
+--  client.lua
+local ESX = exports['es_extended']:getSharedObject()
 local isAdmin = false
 local blipsVisible = false
 local thermalMode = false
@@ -285,3 +237,4 @@ RegisterNetEvent('nduty:changeVehicleColor', function(data)
         lib.notify({type = 'error', description = 'You are not in a vehicle.'})
     end
 end)
+        
