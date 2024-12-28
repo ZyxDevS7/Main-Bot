@@ -7,14 +7,14 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
-// YouTube channels to monitor
+// YouTube channels to monitor (use channel links here)
 const YOUTUBE_CHANNELS = [
-    { id: 'UC_x5XG1OV2P6uZZ5FSM9Ttw', name: 'Google Developers' }, // Replace with channel ID and name
-    { id: 'UC29ju8bIPH5as8OGnQzwJyA', name: 'Traversy Media' },    // Replace with channel ID and name
+    { link: 'https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw', name: 'Google Developers' }, // Replace with channel link and name
+    { link: 'https://www.youtube.com/channel/UC29ju8bIPH5as8OGnQzwJyA', name: 'Traversy Media' },    // Replace with channel link and name
 ];
 
 // Discord channel ID where notifications will be sent
-const DISCORD_CHANNEL_ID = '1322428122519441540'; // Replace with your channel ID
+const DISCORD_CHANNEL_ID = '123456789012345678'; // Replace with your channel ID
 
 // YouTube API key
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -22,15 +22,27 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 // Track live streams to avoid duplicate notifications
 let liveStreams = new Set();
 
+// Helper function to extract channel ID from the link
+function getChannelIdFromLink(link) {
+    const match = link.match(/youtube\.com\/channel\/([^/]+)/);
+    return match ? match[1] : null;
+}
+
 async function checkLiveStreams() {
     for (const ytChannel of YOUTUBE_CHANNELS) {
+        const channelId = getChannelIdFromLink(ytChannel.link);
+        if (!channelId) {
+            console.error(`Invalid YouTube channel link: ${ytChannel.link}`);
+            continue;
+        }
+
         try {
             const response = await axios.get(
                 `https://www.googleapis.com/youtube/v3/search`,
                 {
                     params: {
                         part: 'snippet',
-                        channelId: ytChannel.id,
+                        channelId: channelId,
                         eventType: 'live',
                         type: 'video',
                         key: YOUTUBE_API_KEY,
