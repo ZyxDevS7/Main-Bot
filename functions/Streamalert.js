@@ -14,7 +14,7 @@ const YOUTUBE_CHANNELS = [
 ];
 
 // Discord channel ID where notifications will be sent
-const DISCORD_CHANNEL_ID = '123456789012345678'; // Replace with your channel ID
+const DISCORD_CHANNEL_ID = '1322428122519441540'; // Replace with your channel ID
 
 // YouTube API key
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
