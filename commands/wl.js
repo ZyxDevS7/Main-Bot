@@ -15,13 +15,13 @@ module.exports = {
         .setDescription('Start a whitelist application.'),
     async execute(interaction) {
         // Hardcoded channel and role IDs
-        const applicationChannelId = '1320024539760955496'; // Replace with the application submission channel ID
-        const pendingRoleId = '1322916523697770496'; // Replace with the pending role ID
-        const acceptedRoleId = '1322916748730830879'; // Replace with the accepted role ID
-        const rejectedRoleId = '1322916699053494323'; // Replace with the rejected role ID
-        const acceptChannelId = '1320024686155006055'; // Replace with the accepted applications channel ID
-        const pendingChannelId = '1322798711050342470'; // Replace with the pending applications channel ID
-        const rejectChannelId = '1322798746030964809'; // Replace with the rejected applications channel ID
+        const applicationChannelId = '1320024539760955496';
+        const pendingRoleId = '1322916523697770496';
+        const acceptedRoleId = '1322916748730830879';
+        const rejectedRoleId = '1322916699053494323';
+        const acceptChannelId = '1320024686155006055';
+        const pendingChannelId = '1322798711050342470';
+        const rejectChannelId = '1322798746030964809';
 
         // Create the main embed
         const whitelistEmbed = new EmbedBuilder()
@@ -153,7 +153,7 @@ module.exports = {
                 });
 
                 buttonCollector.on('collect', async buttonInteraction => {
-                    if (!['accept', 'pending', 'reject'].includes(buttonInteraction.customId)) return;
+                    await buttonInteraction.deferUpdate(); // Acknowledge the button interaction to prevent "Interaction failed."
 
                     const whitelistManager = buttonInteraction.user;
                     const targetUser = modalInteraction.user;
@@ -204,7 +204,7 @@ module.exports = {
                     const destinationChannel = modalInteraction.guild.channels.cache.get(destinationChannelId);
                     await destinationChannel.send({ embeds: [resultEmbed] });
 
-                    await buttonInteraction.reply({
+                    await buttonInteraction.followUp({
                         content: `The application has been marked as **${embedTitle.toLowerCase()}**.`,
                         ephemeral: true,
                     });
@@ -213,4 +213,3 @@ module.exports = {
         });
     },
 };
-                  
