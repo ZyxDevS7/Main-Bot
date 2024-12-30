@@ -51,11 +51,25 @@ for (const file of commandFiles) {
 // Handle interactions
 client.on('interactionCreate', async interaction => {
     try {
-        await handleCommand(interaction);
+        if (interaction.isCommand()) {
+            const command = client.commands.get(interaction.commandName);
+            if (command) await command.execute(interaction);
+        } else if (interaction.isButton() || interaction.isModalSubmit()) {
+            // Handle button or modal interactions
+            const command = client.commands.get('whitelist'); // Update if needed
+            if (command && typeof command.handleInteraction === 'function') {
+                await command.handleInteraction(interaction);
+            } else {
+                console.error('No interaction handler found for this interaction.');
+            }
+        }
     } catch (error) {
         console.error('Error handling interaction:', error);
         if (interaction.isRepliable()) {
-            await interaction.reply({ content: 'An error occurred while processing your request.', ephemeral: true });
+            await interaction.reply({
+                content: 'An error occurred while processing your request.',
+                ephemeral: true,
+            });
         }
     }
 });
