@@ -60,6 +60,18 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+//Tetsss
+client.on('interactionCreate', async interaction => {
+    if (interaction.isCommand()) {
+        const command = client.commands.get(interaction.commandName);
+        if (command) await command.execute(interaction);
+    } else if (interaction.isButton() || interaction.isModalSubmit()) {
+        const whitelistCommand = client.commands.get('whitelist');
+        if (whitelistCommand) await whitelistCommand.handleInteraction(interaction);
+    }
+});
+
+
 // Log bot ready status
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
